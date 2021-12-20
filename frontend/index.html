@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <title>cards</title>
+</head>
+
+<body onload="doGet()">
+    <div id="body">
+        <div id="addCardForm">
+            <input type="text" id="cardContent" name="lname"><br><br>
+            <button id="addCard" onclick="addCard()">Ajouter une carte</button>
+        </div>
+    </div>
+    <script>
+        function addCard (){
+            if(document.getElementById("cardContent").value != ""){
+                doPost(document.getElementById("cardContent").value);
+                document.getElementById("cardContent").value="";
+            }
+        }
+        function e(tag, parent, id, itsClass, value) {
+            let element = document.createElement(tag);
+            element.className = itsClass;
+            element.id = id;
+            element.innerHTML = value;
+            parent.appendChild(element);
+            return element;
+        }
+
+        function doGet() {
+            var url = "http://localhost:3000/api/cards";
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", url);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    const responseJson = JSON.parse(xhr.response);
+                    if (!responseJson.cards.length) e("p", document.getElementById("body"), "no_cards", "", "Il n'existe aucune carte");
+                    else {
+                        let cardsDiv = e("div", document.getElementById("body"), "cards", "", "")
+                        for (var [i, card] of responseJson.cards.entries()) {
+                            let theCard = e("div", cardsDiv, "", "card", "");
+                            e("p", theCard, "", "contentText", card.content);
+                            let deleteButton = e("button", theCard, "", "deleteButton", "supprimer");
+                            deleteButton.setAttribute("onclick", "doDelete(" + card.id + ")");
+                        }
+                    }
+                }
+            }
+
+            xhr.send();
+        }
+
+        function doPost(content) {
+            var url = "http://localhost:3000/api/cards";
+            var xhr = new XMLHttpRequest();
+            const card = {
+                "content": content
+            }
+            xhr.open("POST", url);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    const responseJson = JSON.parse(xhr.response);
+                    document.location.reload();
+                }
+            }
+
+            xhr.send(JSON.stringify(card));
+        }
+
+        function doDelete(id) {
+            var url = "http://localhost:3000/api/cards/" + id;
+            var xhr = new XMLHttpRequest();
+            xhr.open("DELETE", url);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            xhr.onreadystatechange = function () {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    const responseJson = JSON.parse(xhr.response);
+                    document.location.reload();
+                }
+            }
+
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>

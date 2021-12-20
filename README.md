@@ -1,0 +1,2 @@
+Afin de lancer le projet, il faut exécuter un "npm install" dans le dossier backend pour installer toutes les dépendances. Ensuite il faut exécuter la commande "node server", toujours dans le même dossier, pour lancer le serveur en local.
+Vous pouvez ainsi accéder au fichier index.html (dans le dossier frontend) depuis un navigateur web pour tester l'application.
